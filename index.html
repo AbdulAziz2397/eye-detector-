@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="ur">
-
 <head>
     <title>پلک جھپکنے سے کمانڈ</title>
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        video,
-        canvas {
+        video, canvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -40,12 +38,8 @@
         }
 
         async function start() {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('/face-api.js-models/tiny_face_detector');
-            await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/face-api.js-models/face_landmark_68_tiny');
-
             await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
             await faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
-
 
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
@@ -81,5 +75,4 @@
         start();
     </script>
 </body>
-
 </html>
