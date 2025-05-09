@@ -40,8 +40,8 @@
         }
 
         async function start() {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-            await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/models');
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/face-api.js-models/tiny_face_detector');
+            await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/face-api.js-models/face_landmark_68_tiny');
 
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
