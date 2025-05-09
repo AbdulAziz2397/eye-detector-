@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="ur">
-
 <head>
     <title>پلک جھپکنے سے کمانڈ</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        video,
-        canvas {
+        video, canvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -21,7 +19,6 @@
         }
     </style>
 </head>
-
 <body>
     <video id="video" width="640" height="480" autoplay muted></video>
     <canvas id="overlay" width="640" height="480"></canvas>
@@ -74,10 +71,9 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            start(); // faceapi اب لوڈ ہو چکا ہو گا
-        });
+        window.onload = () => {
+            start();
+        };
     </script>
 </body>
-
 </html>
