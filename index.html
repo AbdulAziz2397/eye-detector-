@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>مریض کے لیے آنکھوں سے بات چیت</title>
+  <script src="https://webgazer.cs.brown.edu/webgazer.js"></script>
+  <style>
+    .option {
+      width: 30%;
+      padding: 20px;
+      margin: 20px;
+      border: 2px solid black;
+      font-size: 24px;
+      text-align: center;
+      float: left;
+    }
+  </style>
+</head>
+<body onload="initGaze()">
+
+  <h1>کیا چاہیے؟</h1>
+  <div id="options">
+    <div class="option" id="water">پانی</div>
+    <div class="option" id="food">کھانا</div>
+    <div class="option" id="fan">پنکھا</div>
+  </div>
+
+  <script>
+    function initGaze() {
+      webgazer.setGazeListener(function(data, elapsedTime) {
+        if (data == null) return;
+
+        const x = data.x;
+        const y = data.y;
+        const element = document.elementFromPoint(x, y);
+
+        if (element && element.classList.contains("option")) {
+          element.style.backgroundColor = "yellow";
+          setTimeout(() => {
+            alert(`مریض نے ${element.innerText} منتخب کیا ہے`);
+          }, 1000);
+        }
+      }).begin();
+    }
+  </script>
+
+</body>
+</html>
