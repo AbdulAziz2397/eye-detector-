@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ur">
 
 <head>
     <title>پلک جھپکنے سے کمانڈ</title>
@@ -33,12 +33,18 @@
         let blinkCount = 0;
         let lastState = 'open';
 
+        function getEyeOpenness(eye) {
+            const vertical = Math.hypot(eye[1].y - eye[5].y) + Math.hypot(eye[2].y - eye[4].y);
+            const horizontal = Math.hypot(eye[0].x - eye[3].x);
+            return vertical / (2.0 * horizontal);
+        }
+
         async function start() {
             await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
             await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/models');
 
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => video.srcObject = stream);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
 
             video.addEventListener('play', () => {
                 const canvas = document.getElementById('overlay');
@@ -68,18 +74,7 @@
             });
         }
 
-        function getEyeOpenness(eye) {
-            const vertical = Math.hypot(eye[1].y - eye[5].y) + Math.hypot(eye[2].y - eye[4].y);
-            const horizontal = Math.hypot(eye[0].x - eye[3].x);
-            return vertical / (2.0 * horizontal);
-        }
-
         start();
-
-
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-        await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/models');
-
     </script>
 </body>
 
