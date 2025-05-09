@@ -1,79 +1,92 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-    <title>پلک جھپکنے سے کمانڈ</title>
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    <style>
-        video, canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+  <meta charset="UTF-8" />
+  <title>پلک جھپکنے سے کمانڈ</title>
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <style>
+    video, canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
 
-        #message {
-            position: absolute;
-            top: 400px;
-            font-size: 28px;
-            background: lightyellow;
-            padding: 10px;
-        }
-    </style>
+    #message {
+      position: absolute;
+      top: 500px;
+      font-size: 28px;
+      background: lightyellow;
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
-    <video id="video" width="640" height="480" autoplay muted></video>
-    <canvas id="overlay" width="640" height="480"></canvas>
-    <div id="message">ابھی تک پلک نہیں جھپکی گئی</div>
+  <video id="video" width="640" height="480" autoplay muted></video>
+  <canvas id="overlay" width="640" height="480"></canvas>
+  <div id="message">ابھی تک پلک نہیں جھپکی گئی</div>
 
-    <script>
-        const video = document.getElementById('video');
-        const message = document.getElementById('message');
-        let blinkCount = 0;
-        let lastState = 'open';
+  <script>
+    const video = document.getElementById("video");
+    const message = document.getElementById("message");
+    let blinkCount = 0;
+    let lastState = "open";
 
-        function getEyeOpenness(eye) {
-            const vertical = Math.hypot(eye[1].y - eye[5].y) + Math.hypot(eye[2].y - eye[4].y);
-            const horizontal = Math.hypot(eye[0].x - eye[3].x);
-            return vertical / (2.0 * horizontal);
-        }
+    function getEyeOpenness(eye) {
+      const vertical = Math.hypot(eye[1].y - eye[5].y) + Math.hypot(eye[2].y - eye[4].y);
+      const horizontal = Math.hypot(eye[0].x - eye[3].x);
+      return vertical / (2.0 * horizontal);
+    }
 
-        async function start() {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
-            await faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+    async function start() {
+      // Load models
+      const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
 
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
+      // Start video
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+      video.srcObject = stream;
 
-            video.addEventListener('play', () => {
-                const canvas = document.getElementById('overlay');
-                const displaySize = { width: video.width, height: video.height };
-                faceapi.matchDimensions(canvas, displaySize);
+      video.addEventListener("play", () => {
+        const canvas = document.getElementById("overlay");
+        const displaySize = { width: video.width, height: video.height };
+        faceapi.matchDimensions(canvas, displaySize);
 
-                setInterval(async () => {
-                    const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-                        .withFaceLandmarks(true);
+        setInterval(async () => {
+          const detections = await faceapi
+            .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks(true);
 
-                    if (detections) {
-                        const landmarks = detections.landmarks;
-                        const leftEye = landmarks.getLeftEye();
-                        const rightEye = landmarks.getRightEye();
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                        const eyeOpenness = getEyeOpenness(leftEye) + getEyeOpenness(rightEye);
+          if (detections) {
+            const resized = faceapi.resizeResults(detections, displaySize);
+            faceapi.draw.drawFaceLandmarks(canvas, resized);
 
-                        if (eyeOpenness < 0.25 && lastState === 'open') {
-                            blinkCount++;
-                            lastState = 'closed';
-                            message.innerText = `پلک جھپکنے کا سگنل ملا: ${blinkCount}`;
-                        } else if (eyeOpenness >= 0.25) {
-                            lastState = 'open';
-                        }
-                    }
-                }, 100);
-            });
-        }
+            const landmarks = detections.landmarks;
+            const leftEye = landmarks.getLeftEye();
+            const rightEye = landmarks.getRightEye();
 
-        window.onload = () => {
-            start();
-        };
-    </script>
+            const eyeOpenness = getEyeOpenness(leftEye) + getEyeOpenness(rightEye);
+
+            if (eyeOpenness < 0.25 && lastState === "open") {
+              blinkCount++;
+              lastState = "closed";
+              message.innerText = `پلک جھپکنے کا سگنل ملا: ${blinkCount}`;
+            } else if (eyeOpenness >= 0.25) {
+              lastState = "open";
+            }
+          } else {
+            message.innerText = "چہرہ نظر نہیں آ رہا";
+          }
+        }, 100);
+      });
+    }
+
+    window.onload = () => {
+      start();
+    };
+  </script>
 </body>
 </html>
